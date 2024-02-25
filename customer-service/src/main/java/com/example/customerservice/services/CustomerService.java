@@ -4,20 +4,24 @@ import com.example.customerservice.DTO.CustomerDto;
 import com.example.customerservice.entitys.Customer;
 import com.example.customerservice.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@Transactional
 public class CustomerService {
-    @Autowired
+
     CustomerRepository customerRepository;
+
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
 
     public List<CustomerDto> getAllCustomers(){
            List<CustomerDto> customerDtos = new ArrayList<>();
@@ -33,8 +37,17 @@ public class CustomerService {
          return CustomerDto.toCustomerDto(obj);
     }
 
-    public void saveCustomer(Customer customer){
-         this.customerRepository.save(customer);
+    public void saveCustomer(CustomerDto customerDto){
+
+         this.customerRepository.save(
+                 Customer.builder()
+                         .firstName(customerDto.getFirstName())
+                         .lasName(customerDto.getLasName())
+                         .age(customerDto.getAge())
+                         .cne(customerDto.getCne())
+                         .email(customerDto.getEmail())
+                         .build()
+         );
 
     }
 
